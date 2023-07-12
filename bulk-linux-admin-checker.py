@@ -1,32 +1,43 @@
 from paramiko import SSHClient,AutoAddPolicy
 from re import match
+import csv
 
-uname = ""
-pword = ""
+uname = "csoc-thor"
+pword = "6Vk9@4erLXJD"
 
 list_ip_file = open("ip.txt", "r")
 
-for ip_with_enter in list_ip_file:
-    ip = ip_with_enter.replace("\n", "")
+with open('report.csv', 'w', newline='', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    csv_header = ["IP", "Status"]
+    writer.writerow(csv_header)
 
-    client = SSHClient()
-    #client.load_system_host_keys()
-    #client.load_host_keys('~/.ssh/known_hosts')
-    client.set_missing_host_key_policy(AutoAddPolicy())
+    for ip_with_enter in list_ip_file:
+        ip = ip_with_enter.replace("\n", "")
 
-    client.connect(ip, username = uname, password = pword)
+        client = SSHClient()
+        #client.load_system_host_keys()
+        #client.load_host_keys('~/.ssh/known_hosts')
+        client.set_missing_host_key_policy(AutoAddPolicy())
 
-    stdin, stdout, stderr = client.exec_command('sudo -u root whoami')
+        client.connect(ip, username = uname, password = pword)
 
-    # print(f'STDOUT: {stdout.read().decode("utf8")}')
-    output = stdout.read().decode("utf8").replace("\n", "")
-    pattern = '^root$'
-    if match(pattern, output):
-        print (ip, "\tRoot")
-    else:
-        print (ip, "\tNot Root")
+        stdin, stdout, stderr = client.exec_command('sudo -u root whoami')
 
-    stdin.close()
-    stdout.close()
-    stderr.close()
-    client.close()
+        # print(f'STDOUT: {stdout.read().decode("utf8")}')
+        output = stdout.read().decode("utf8").replace("\n", "")
+        pattern = '^root$'
+        if match(pattern, output):
+            root_status = "Admin"
+        else:
+            root_status = ""
+
+        csv_data = [ip, root_status]
+        writer.writerow(csv_data)
+
+        stdin.close()
+        stdout.close()
+        stderr.close()
+        client.close()
+
+    f.close()
