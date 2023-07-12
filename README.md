@@ -1,0 +1,1 @@
+# bulk-linux-admin-checker
