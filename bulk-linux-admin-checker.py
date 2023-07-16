@@ -15,29 +15,35 @@ with open('report.csv', 'w', newline='', encoding='utf-8') as f:
     for ip_with_enter in list_ip_file:
         ip = ip_with_enter.replace("\n", "")
 
-        client = SSHClient()
-        #client.load_system_host_keys()
-        #client.load_host_keys('~/.ssh/known_hosts')
-        client.set_missing_host_key_policy(AutoAddPolicy())
+        print (ip)
 
-        client.connect(ip, username = uname, password = pword)
+        try:
+            client = SSHClient()
+            #client.load_system_host_keys()
+            #client.load_host_keys('~/.ssh/known_hosts')
+            client.set_missing_host_key_policy(AutoAddPolicy())
 
-        stdin, stdout, stderr = client.exec_command('sudo -u root whoami')
+            client.connect(ip, username = uname, password = pword)
 
-        # print(f'STDOUT: {stdout.read().decode("utf8")}')
-        output = stdout.read().decode("utf8").replace("\n", "")
-        pattern = '^root$'
-        if match(pattern, output):
-            root_status = "Admin"
-        else:
-            root_status = ""
+            stdin, stdout, stderr = client.exec_command('sudo -u root whoami')
 
-        csv_data = [ip, root_status]
-        writer.writerow(csv_data)
+            # print(f'STDOUT: {stdout.read().decode("utf8")}')
+            output = stdout.read().decode("utf8").replace("\n", "")
+            pattern = '^root$'
+            if match(pattern, output):
+                root_status = "Admin"
+            else:
+                root_status = ""
 
-        stdin.close()
-        stdout.close()
-        stderr.close()
-        client.close()
+            csv_data = [ip, root_status]
+            writer.writerow(csv_data)
+
+            stdin.close()
+            stdout.close()
+            stderr.close()
+            client.close()
+        except:
+            csv_data = [ip, ""]
+            writer.writerow(csv_data)
 
     f.close()
