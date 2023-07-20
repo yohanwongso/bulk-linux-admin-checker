@@ -1,9 +1,12 @@
 from paramiko import SSHClient,AutoAddPolicy
 from re import match
 import csv
+import yaml
 
-uname = ""
-pword = ""
+with open('config.yml', 'r') as yaml_config_file:
+    config = yaml.safe_load(yaml_config_file)
+
+print(config["ssh"]["username"])
 
 list_ip_file = open("ip.txt", "r")
 
@@ -23,7 +26,7 @@ with open('report.csv', 'w', newline='', encoding='utf-8') as f:
             #client.load_host_keys('~/.ssh/known_hosts')
             client.set_missing_host_key_policy(AutoAddPolicy())
 
-            client.connect(ip, username = uname, password = pword)
+            client.connect(ip, port = config["ssh"]["port"], username = config["ssh"]["username"], password = config["ssh"]["password"])
 
             stdin, stdout, stderr = client.exec_command('sudo -u root whoami')
 
