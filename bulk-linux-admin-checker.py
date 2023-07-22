@@ -31,30 +31,29 @@ def check_sudo_user (ssh_client):
 
 with open('config.yml', 'r') as yaml_config_file:
     config = safe_load(yaml_config_file)
-    yaml_config_file.close()
 
-    with open(config["ssh"]["list_ip_file"], "r") as list_ip_file:
-        with open(config["output"]["csv"], 'w', newline='', encoding='utf-8') as output_csv_file:
-            output_csv_writer = writer(output_csv_file)
-            csv_header = ["IP", "Status"]
-            output_csv_writer.writerow(csv_header)
+with open(config["ssh"]["list_ip_file"], "r") as list_ip_file:
+    with open(config["output"]["csv"], 'w', newline='', encoding='utf-8') as output_csv_file:
+        output_csv_writer = writer(output_csv_file)
+        csv_header = ["IP", "Status"]
+        output_csv_writer.writerow(csv_header)
 
-            for ip_with_enter in list_ip_file:
-                ip = ip_with_enter.replace("\n", "")
+        for ip_with_enter in list_ip_file:
+            ip = ip_with_enter.replace("\n", "")
 
-                print (ip)
+            print (ip)
 
-                ssh_client = create_SSH_client(ip, config["ssh"]["port"], config["ssh"]["username"], config["ssh"]["password"])
-                if ssh_client != False:
-                    if check_sudo_user(ssh_client):
-                        root_status = "Admin"
-                    else:
-                        root_status = ""
-
-                    csv_data = [ip, root_status]
-                    output_csv_writer.writerow(csv_data)
+            ssh_client = create_SSH_client(ip, config["ssh"]["port"], config["ssh"]["username"], config["ssh"]["password"])
+            if ssh_client != False:
+                if check_sudo_user(ssh_client):
+                    root_status = "Admin"
                 else:
-                    print("connect error")
-                    csv_data = [ip, ""]
-                    output_csv_writer.writerow(csv_data)
-                ssh_client.close()
+                    root_status = ""
+
+                csv_data = [ip, root_status]
+                output_csv_writer.writerow(csv_data)
+            else:
+                print("connect error")
+                csv_data = [ip, ""]
+                output_csv_writer.writerow(csv_data)
+            ssh_client.close()
