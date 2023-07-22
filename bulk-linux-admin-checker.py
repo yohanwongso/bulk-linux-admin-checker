@@ -57,5 +57,4 @@ with open('config.yml', 'r') as yaml_config_file:
                     print("connect error")
                     csv_data = [ip, ""]
                     output_csv_writer.writerow(csv_data)
-            output_csv_file.close()
-        list_ip_file.close()
+                ssh_client.close()
