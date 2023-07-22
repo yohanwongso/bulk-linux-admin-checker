@@ -1,7 +1,7 @@
+from yaml import safe_load
+from csv import writer
 from paramiko import SSHClient,AutoAddPolicy
 from re import match
-from csv import writer
-from yaml import safe_load
 
 def create_SSH_client (ssh_hostname, ssh_port, ssh_username, ssh_password):
     try:
